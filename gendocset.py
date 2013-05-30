@@ -27,7 +27,7 @@ from os import path
 # The online documentation's JavaScript causes the anchors to be worthless.
 # Loading a page with an anchor will not go to the correct spot because the
 # elements are by default expanded and the nav will happen before they get
-# collapsed. Sadly, you must use a local copy where the JS does not work.
+# collapsed. Sadly, you must use a local copy where the JS is not enabled.
 USE_ONLINE_DOCS = False
 
 if USE_ONLINE_DOCS:
