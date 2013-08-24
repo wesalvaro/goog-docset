@@ -12,7 +12,7 @@ Generate the latest docset:
   python gendocset.py
   open goog.docset
 Package a generated docset:
-  tar --exclude='.DS_Store' --exclude='.svn' -czf docset.tgz goog.docset
+  tar --exclude='.DS_Store' --exclude='.git' -czf docset.tgz goog.docset
 """
 import bs4
 import glob
