@@ -1,0 +1,3 @@
+[submodule "goog.docset/Contents/Resources/Documents"]
+	path = goog.docset/Contents/Resources/Documents
+	url = https://code.google.com/p/closure-library.docs/
