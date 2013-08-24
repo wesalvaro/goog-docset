@@ -3,14 +3,11 @@
 Requires BeautifulSoup4.
 
 Generate the latest docset:
-  mkdir -p goog.docset/Contents/Resources/Documents
+  # Make sure you've pulled the Closure submodule's contents.
   cp Info.plist goog.docset/Contents/.
-  pushd goog.docset/Contents/Resources/Documents
-  svn co http://closure-library.googlecode.com/svn/docs .
-  cp static/images/16px.png ../../../icon.png
-  popd
-  curl http://www.crummy.com/software/BeautifulSoup/bs4/download/4.2/beautifulsoup4-4.2.0.tar.gz
-  tar -xzf beautifulsoup4-4.2.0.tar.gz
+  cp goog.docset/Contents/Resources/Documents/static/images/16px.png goog.docset/icon.png
+  curl -o bs4.tgz http://www.crummy.com/software/BeautifulSoup/bs4/download/4.2/beautifulsoup4-4.2.0.tar.gz
+  tar -xzf bs4.tgz
   cp -r beautifulsoup4-4.2.0/bs4 .
   python gendocset.py
   open goog.docset
