@@ -1,4 +1,5 @@
 [submodule "goog.docset/Contents/Resources/Documents"]
 	path = goog.docset/Contents/Resources/Documents
-	url = https://code.google.com/p/closure-library.docs/
+	url = https://github.com/google/closure-library.git
+        branch = gh-pages
 	ignore = dirty
