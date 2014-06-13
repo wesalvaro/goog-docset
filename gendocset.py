@@ -2,8 +2,13 @@
 
 Requires BeautifulSoup4.
 
+For automated setup & build, see ./Makefile and scripts referenced thereof.
+If you enjoy typing in shell commands manually, or if you're on a platform where
+the scripts don't work, instructions are below.
+
 Generate the latest docset:
-  # Make sure you've pulled the Closure submodule's contents.
+  # Make sure you've pulled the Closure submodule's contents (see
+  # ./.gitmodules), then:
   cp Info.plist goog.docset/Contents/.
   cp goog.docset/Contents/Resources/Documents/static/images/16px.png goog.docset/icon.png
   curl -o bs4.tgz http://www.crummy.com/software/BeautifulSoup/bs4/download/4.2/beautifulsoup4-4.2.0.tar.gz
@@ -13,6 +18,7 @@ Generate the latest docset:
   open goog.docset
 Package a generated docset:
   tar --exclude='.DS_Store' --exclude='.git' -czf docset.tgz goog.docset
+
 """
 import bs4
 import glob
