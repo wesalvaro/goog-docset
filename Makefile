@@ -1,5 +1,4 @@
-# 
-#  script requires pip and virtualenv.
+# Build scripts require pip and virtualenv.
 # See http://virtualenv.readthedocs.org/
 
 # By default, runs a full prep/generate cycle.
