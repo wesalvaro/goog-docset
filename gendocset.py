@@ -28,7 +28,7 @@ from os import path
 USE_ONLINE_DOCS = False
 
 if USE_ONLINE_DOCS:
-  ONLINE_DOC_PATH = 'http://closure-library.googlecode.com/svn/docs/'
+  ONLINE_DOC_PATH = 'http://google.github.io/closure-library/api/'
 else:
   ONLINE_DOC_PATH = ''
 
@@ -42,6 +42,7 @@ class DocSet(object):
 
   def __init__(self):
     self.db = None
+    self.format_doc_path = lambda path: path
 
   def connect(self):
     if self.db: return
@@ -70,7 +71,10 @@ class DocSet(object):
 
   def _add(self, name, doc_path, doc_type='Function'):
     print '%s %s:\n\t%s' %(doc_type.upper(), name, doc_path)
-    self.cur.execute(self.INSERT, (name, doc_type, ONLINE_DOC_PATH + doc_path))
+    self.cur.execute(self.INSERT,
+                     (name,
+                      doc_type,
+                      ONLINE_DOC_PATH + self.format_doc_path(doc_path)))
 
   def add_const(self, name, path):
     self._add(name, path, doc_type='Const')
@@ -87,15 +91,16 @@ class DocSet(object):
 
 class ClosureDocs(object):
 
-  DOCPATH = 'goog.docset/Contents/Resources/Documents/*'
+  DOCPATH = 'goog.docset/Contents/Resources/Documents/api/*'
   METHOD_PATTERN = re.compile('(.*\.?\w+)\.prototype\.(\w+)')
   CONST_PATTERN = re.compile('.*\.[A-Z_]+$')
 
   def __init__(self, docset):
     self.docset = docset
+    self.docset.format_doc_path = lambda path: 'api/' + path
 
   def find_classes(self, soup, unused_file_name):
-    classes = soup.select('div.desc a')
+    classes = soup.select('div.fn-constructor a')
     for cls in classes:
       name = cls.contents[0].strip()
       doc_path = cls.attrs['href']
