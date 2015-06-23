@@ -34,9 +34,9 @@ from os import path
 USE_ONLINE_DOCS = False
 
 if USE_ONLINE_DOCS:
-  ONLINE_DOC_PATH = 'http://google.github.io/closure-library/api/'
+  BASE_DOC_PATH = 'http://google.github.io/closure-library/api/'
 else:
-  ONLINE_DOC_PATH = ''
+  BASE_DOC_PATH = 'api/'
 
 
 class DocSet(object):
@@ -76,11 +76,13 @@ class DocSet(object):
     self.disconnect()
 
   def _add(self, name, doc_path, doc_type='Function'):
-    print '%s %s:\n\t%s' %(doc_type.upper(), name, doc_path)
-    self.cur.execute(self.INSERT,
-                     (name,
-                      doc_type,
-                      ONLINE_DOC_PATH + self.format_doc_path(doc_path)))
+    doc_path = self.format_doc_path(doc_path)
+    if not name or not doc_path:
+      print 'Not adding `%s` with docs `%s`.' % (name, doc_path)
+      return
+    self.cur.execute(self.INSERT, (name, doc_type, doc_path))
+    print '%d %s %s:\n\t%s' % (
+        self.cur.lastrowid, doc_type.upper(), name, doc_path)
 
   def add_const(self, name, path):
     self._add(name, path, doc_type='Const')
@@ -96,17 +98,26 @@ class DocSet(object):
 
 
 class ClosureDocs(object):
-
-  DOCPATH = 'goog.docset/Contents/Resources/Documents/api/*'
+  DOCPATH = 'goog.docset/Contents/Resources/Documents/api/'
   METHOD_PATTERN = re.compile('(.*\.?\w+)\.prototype\.(\w+)')
   CONST_PATTERN = re.compile('.*\.[A-Z_]+$')
 
   def __init__(self, docset):
     self.docset = docset
-    self.docset.format_doc_path = lambda path: 'api/' + path
+
+    def format_doc_path(doc_path):
+      if doc_path.startswith('http'):
+        return doc_path
+      if not USE_ONLINE_DOCS:  # Check if the file exists.
+        doc_path_and_hash = doc_path.split('#')
+        if not path.isfile(self.DOCPATH + doc_path_and_hash[0]):
+          print 'Document was not found:', doc_path
+          return None
+      return BASE_DOC_PATH + doc_path
+    self.docset.format_doc_path = format_doc_path
 
   def find_classes(self, soup, unused_file_name):
-    classes = soup.select('div.fn-constructor a')
+    classes = soup.select('div.fn-constructor > a')
     for cls in classes:
       name = cls.contents[0].strip()
       doc_path = cls.attrs['href']
@@ -137,9 +148,12 @@ class ClosureDocs(object):
     self.find_functions(soup, file_name)
 
   def parse(self):
-    for path in glob.glob(self.DOCPATH):
+    for path in glob.glob(self.DOCPATH + '*'):
 
       if os.path.isdir(path): continue
+      if '_test.' in path: continue
+      if '.source.' in path: continue
+      if 'local_' in path: continue
       with open(path) as doc:
         file_name = os.path.basename(path)
         print 'Processing %s' % file_name
